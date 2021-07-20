@@ -16,7 +16,7 @@ namespace CAPDistributedService.Controllers
     public class UserController : ControllerBase
     {
         private readonly ICapPublisher _capBus;
-        private readonly DbContext _dbContext;
+        private readonly Cap_test_dbContext _dbContext;
 
         public UserController(ICapPublisher capBus, Cap_test_dbContext dbContext)
         {
@@ -29,10 +29,10 @@ namespace CAPDistributedService.Controllers
         {
             User cur = param;
             cur.Id = CAPService.Utils.IdGenerator.GetSnowflakeId();
-            using (IDbContextTransaction transaction = _dbContext.Database.BeginTransaction(_capBus, true))
+            using (IDbContextTransaction transaction = _dbContext.Database.BeginTransaction(_capBus, false))
             {
                 _ = await _dbContext.Set<User>().AddAsync(cur);
-                await _capBus.PublishAsync("UserService.AddUserWithCompany", new { UserId = param.Id, CompanyId = param.CompanyId });
+                await _capBus.PublishAsync("UserService.AddUserWithCompany", new UserCompanyMap { UserId = param.Id, CompanyId = param.CompanyId });
                 _ = await _dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
@@ -48,7 +48,7 @@ namespace CAPDistributedService.Controllers
 
     public class InsertUserParam : User
     {
-        public int CompanyId { get; set; }
+        public ulong CompanyId { get; set; }
     }
 
 }

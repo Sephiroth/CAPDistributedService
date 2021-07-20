@@ -1,21 +1,13 @@
 using CAPService.Impl;
 using CAPService.Interface;
-using DotNetCore.CAP;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CAPDistributedService
 {
@@ -45,16 +37,18 @@ namespace CAPDistributedService
             // 注入DbContext
             string mysqlConnection = Configuration["MySqlConnection"];
             CAPService.Model.Cap_test_dbContext.ConnectionStr = mysqlConnection;
-            services.AddDbContextPool<CAPService.Model.Cap_test_dbContext>(op =>
+            services.AddDbContext<CAPService.Model.Cap_test_dbContext>(op =>
             {
                 op.UseMySql(mysqlConnection, ServerVersion.Parse("8.0.21-mysql"));
-            }, 28);
-
+            });
+            
             var rabbitOption = CAPDistributedService.Configuration.RabbitMQConf.GetConf(Configuration, "RabbitMQ");
             services.AddCap(x =>
             {
                 //如果你使用的 EF 进行数据操作，你需要添加如下配置：
-                x.UseEntityFramework<CAPService.Model.Cap_test_dbContext>();
+                //x.UseEntityFramework<CAPService.Model.Cap_test_dbContext>();
+                x.UseMySql(mysqlConnection);
+
                 //CAP支持 RabbitMQ、Kafka、AzureServiceBus、AmazonSQS 等作为MQ，根据使用选择配置：
                 x.UseRabbitMQ(options =>
                 {

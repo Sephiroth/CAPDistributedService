@@ -11,13 +11,13 @@ namespace CAPService.Utils
     {
         static IdGenerator()
         {
-            _workId = (ushort)(DateTime.Now.Ticks % 100);
-            _centerId = (ushort)(DateTime.Now.Ticks % 100);
+            _workId = (ushort)(DateTime.Now.Ticks % 10);
+            _centerId = (ushort)(DateTime.Now.Ticks % 10);
         }
 
         private static ushort _workId;
         private static ushort _centerId;
-        private static readonly object _lock = new ();
+        private static readonly object _lock = new();
         private static IdWorker _idWorker;
 
         public static void Init(ushort workId, ushort centerId)
