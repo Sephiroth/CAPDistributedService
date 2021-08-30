@@ -1,13 +1,9 @@
-﻿using CAPService.Impl;
+﻿using CAPService.Interface;
 using DotNetCore.CAP;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace CAPService.Interface
+namespace CAPService.Impl
 {
     public class UserSubscriberService : IUserSubscriberService, ICapSubscribe
     {

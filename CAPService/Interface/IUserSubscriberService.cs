@@ -1,4 +1,4 @@
-﻿namespace CAPService.Impl
+﻿namespace CAPService.Interface
 {
     public interface IUserSubscriberService
     {

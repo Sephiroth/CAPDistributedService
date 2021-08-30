@@ -29,12 +29,14 @@ namespace CAPDistributedService.Controllers
         {
             User cur = param;
             cur.Id = CAPService.Utils.IdGenerator.GetSnowflakeId();
-            using (IDbContextTransaction transaction = _dbContext.Database.BeginTransaction(_capBus, false))
+            using (IDbContextTransaction transaction = _dbContext.Database.BeginTransaction(_capBus, true))
             {
                 _ = await _dbContext.Set<User>().AddAsync(cur);
-                await _capBus.PublishAsync("UserService.AddUserWithCompany", new UserCompanyMap { UserId = param.Id, CompanyId = param.CompanyId });
                 _ = await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await _capBus.PublishAsync(
+                    "UserService.AddUserWithCompany",
+                    new UserCompanyMap { UserId = param.Id, CompanyId = param.CompanyId }
+                    );
             }
             return Ok();
         }
